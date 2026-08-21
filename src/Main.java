@@ -1,5 +1,6 @@
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -210,18 +211,44 @@ public class Main {
                     menuReservas:
                     while (true) {
                         System.out.println("""
-                                                 Seleccione una opción:
-                                                 1. Crear Reserva.
-                                                 2. Listar Reservas.
-                                                 3. Buscar Reserva por ID.
-                                                 4. Cancelar Reserva.
-                                                 5. Actualizar Reserva.
-                                                 6. Volver al menú principal.""");
+                                Seleccione una opción:
+                                1. Crear Reserva.
+                                2. Listar Reservas.
+                                3. Buscar Reserva por ID.
+                                4. Cancelar Reserva.
+                                5. Actualizar Reserva.
+                                6. Volver al menú principal.""");
                         int b = sc.nextInt();
                         sc.nextLine();
                         switch (b) {
                             case 1:
                                 System.out.println("Ingrese los datos de la reserva");
+                                List<Cancha> listaCanchas = mapCanchas.listarCanchas();
+                                if (listaCanchas.isEmpty()) {
+                                    System.out.println("No existen canchas en el momento\n________________");
+                                    break;
+                                }
+                                List<Cancha> listaActivas = new ArrayList<>();
+                                for (Cancha c : listaCanchas) {
+                                    if (c.getEstado() == EstadoCancha.ACTIVA) {
+                                        listaActivas.add(c);
+                                    }
+                                }
+                                if (listaActivas.isEmpty()) {
+                                    System.out.println("No existen canchas ACTIVAS en el momento\n________________");
+                                    break;
+                                }
+                                System.out.println("Las canchas existentes son:\n________________");
+                                for (Cancha activa : listaActivas) {
+                                    System.out.printf("""
+                                                    Nombre: %s
+                                                    Id: %s
+                                                    Tipo: %s
+                                                    Estado: %s
+                                                    ________________
+                                                    """,
+                                            activa.getNombre(), activa.getId(), activa.getTipo(), activa.getEstado());
+                                }
                                 System.out.println("Ingrese el ID de la cancha a reservar");
                                 int idCancha = sc.nextInt();
                                 sc.nextLine();
