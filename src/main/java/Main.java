@@ -8,6 +8,10 @@ import java.util.Scanner;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
+        ConexionSQLite conexionSQLite = new ConexionSQLite("db/reservas.db");
+        SchemaCreate schema = new SchemaCreate(conexionSQLite);
+        schema.crearTablas();
+
         CanchaRepository mapCanchas = new CanchaRepository();
         ReservaRepository mapReservas = new ReservaRepository(mapCanchas);
         Scanner sc = new Scanner(System.in);
@@ -354,6 +358,7 @@ public class Main {
                     break;
                 case 3:
                     System.out.println("gracias por usar el programa");
+                    conexionSQLite.cerrarConexion();
                     return;
                 default:
                     System.out.println("Haz seleccionado una opción invalida");
