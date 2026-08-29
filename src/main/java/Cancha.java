@@ -1,13 +1,13 @@
 public class Cancha {
-    private static int contadorId = 0;
+    //private static int contadorId = 0;
     private final int id;
     private String nombre;
     private TipoCancha tipo;
     private EstadoCancha estado;
 
-    public Cancha(String nombre, TipoCancha tipo, EstadoCancha estado) {
-        contadorId++;
-        this.id = contadorId;
+    public Cancha(int id, String nombre, TipoCancha tipo, EstadoCancha estado) {
+        //contadorId++;
+        this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
         this.estado = estado;

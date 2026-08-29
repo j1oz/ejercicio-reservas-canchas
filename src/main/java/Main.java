@@ -12,8 +12,8 @@ public class Main {
         SchemaCreate schema = new SchemaCreate(conexionSQLite);
         schema.crearTablas();
 
-        CanchaRepository mapCanchas = new CanchaRepository();
-        ReservaRepository mapReservas = new ReservaRepository(mapCanchas);
+        CanchaRepository repoCanchas = new CanchaRepository(conexionSQLite);
+        ReservaRepository mapReservas = new ReservaRepository(repoCanchas);
         Scanner sc = new Scanner(System.in);
         System.out.println("\nBienvenido al programa de gestión de resevas");
 
@@ -31,6 +31,7 @@ public class Main {
                     menuCanchas:
                     while (true) {
                         System.out.println("""
+                                -----------------------------------
                                 1. Crear
                                 2. Listar
                                 3. Buscar por id
@@ -84,129 +85,139 @@ public class Main {
                                         break;
                                     } else System.out.println("No seleccionaste un estado válida");
                                 }
-                                mapCanchas.crearCancha(nombre, tipo, estado);
-                                System.out.printf("Se creo la cancha %s correctamente%n%n", nombre);
+                                try {
+                                    repoCanchas.crearCancha(nombre, tipo, estado);
+                                    System.out.printf("Se creo la cancha %s correctamente%n%n", nombre);
+                                } catch (RuntimeException e) {
+                                    System.out.println("Error: " + e.getMessage());
+                                }
+
                                 break;
                             case 2:
-                                List<Cancha> listaCanchas = mapCanchas.listarCanchas();
-                                if (listaCanchas.isEmpty()) {
-                                    System.out.println("No existen canchas en el momento\n________________");
-                                    break;
-                                }
-                                System.out.println("Las canchas existentes son:\n________________");
-                                for (Cancha c : listaCanchas) {
-                                    System.out.printf("""
-                                                    Nombre: %s
-                                                    Id: %s
-                                                    Tipo: %s
-                                                    Estado: %s
-                                                    ________________
-                                                    """,
-                                            c.getNombre(), c.getId(), c.getTipo(), c.getEstado());
+                                try {
+                                    List<Cancha> listaCanchas = repoCanchas.listarCanchas();
+                                    if (listaCanchas.isEmpty()) {
+                                        System.out.println("No existen canchas en el momento\n________________");
+                                        break;
+                                    }
+                                    System.out.println("Las canchas existentes son:\n________________");
+                                    for (Cancha c : listaCanchas) {
+                                        System.out.printf("""
+                                                        Nombre: %s
+                                                        Id: %s
+                                                        Tipo: %s
+                                                        Estado: %s
+                                                        ________________
+                                                        """,
+                                                c.getNombre(), c.getId(), c.getTipo(), c.getEstado());
+                                    }
+                                } catch (RuntimeException e) {
+                                    System.out.println(e.getMessage());
                                 }
                                 break;
                             case 3:
                                 System.out.println("Ingresa el id de la cancha a buscar");
                                 int ingresaId = sc.nextInt();
-                                Cancha result = mapCanchas.obtenerCanchaPorId(ingresaId);
-                                if (result == null) {
-                                    System.out.printf("La cancha con id '%d' no existe.%n", ingresaId);
-                                    break;
-                                } else System.out.printf("""
-                                                La cancha con id %d es:
-                                                Nombre: %s
-                                                Tipo: %s
-                                                Estado: %s
-                                                ________________
-                                                """,
-                                        result.getId(), result.getNombre(), result.getTipo(), result.getEstado());
+                                try {
+                                    Cancha result = repoCanchas.obtenerCanchaPorId(ingresaId);
+                                    System.out.printf("""
+                                                    La cancha con id %d es:
+                                                    Nombre: %s
+                                                    Tipo: %s
+                                                    Estado: %s
+                                                    ________________
+                                                    """,
+                                            result.getId(), result.getNombre(), result.getTipo(), result.getEstado());
+                                } catch (RecursoNoEncontradoException e) {
+                                    System.out.println("Error: " + e.getMessage());
+                                }
                                 break;
                             case 4:
                                 System.out.println("Ingresa el id de la cancha a actualizar: ");
                                 int actualizaId = sc.nextInt();
                                 sc.nextLine();
-                                Cancha actualizar = mapCanchas.obtenerCanchaPorId(actualizaId);
-                                if (actualizar == null) {
-                                    System.out.printf("La cancha con id '%d' no existe.%n", actualizaId);
-                                    break;
-                                }
-                                System.out.println("""
-                                        Introduce los datos a actualizar.
-                                        Para mantener el nombre actual, deja el campo vacío y pulsa Enter.
-                                        1. Escribe el nuevo nombre:
-                                        """);
-                                String nombreActualizado = sc.nextLine();
-                                if (nombreActualizado.isBlank()) nombreActualizado = null;
-
-                                TipoCancha tipoActualizado = null;
-                                while (true) {
+                                try {
                                     System.out.println("""
-                                            Selecciona el nuevo tipo:
-                                            1. Futbol 5.
-                                            2. Futbol 7.
-                                            3. Baloncesto.
-                                            4. Dejar el valor actual.""");
-                                    int nuevoTipo = sc.nextInt();
-                                    if (nuevoTipo == 4) break;
-                                    else if (nuevoTipo == 1) {
-                                        tipoActualizado = TipoCancha.FUTBOL_5;
-                                        break;
-                                    } else if (nuevoTipo == 2) {
-                                        tipoActualizado = TipoCancha.FUTBOL_7;
-                                        break;
-                                    } else if (nuevoTipo == 3) {
-                                        tipoActualizado = TipoCancha.BALONCESTO;
-                                        break;
-                                    } else System.out.println("No seleccionaste un tipo válido");
-                                }
+                                            Introduce los datos a actualizar.
+                                            Para mantener el nombre actual, deja el campo vacío y pulsa Enter.
+                                            1. Escribe el nuevo nombre:
+                                            """);
+                                    String nombreActualizado = sc.nextLine();
+                                    if (nombreActualizado.isBlank()) nombreActualizado = null;
 
-                                EstadoCancha estadoActualizado = null;
-                                while (true) {
-                                    System.out.println("""
-                                            Selecciona el estado de la cancha:
-                                            1. Activa.
-                                            2. Mantenimineto.
-                                            3. Mantener el valor actual.""");
-                                    int nuevoEstado = sc.nextInt();
-                                    if (nuevoEstado == 3) break;
-                                    else if (nuevoEstado == 1) {
-                                        estadoActualizado = EstadoCancha.ACTIVA;
-                                        break;
-                                    } else if (nuevoEstado == 2) {
-                                        estadoActualizado = EstadoCancha.MANTENIMIENTO;
-                                        break;
-                                    } else System.out.println("No seleccionaste un estado válida");
-                                }
+                                    TipoCancha tipoActualizado = null;
+                                    while (true) {
+                                        System.out.println("""
+                                                Selecciona el nuevo tipo:
+                                                1. Futbol 5.
+                                                2. Futbol 7.
+                                                3. Baloncesto.
+                                                4. Dejar el valor actual.""");
+                                        int nuevoTipo = sc.nextInt();
+                                        if (nuevoTipo == 4) break;
+                                        else if (nuevoTipo == 1) {
+                                            tipoActualizado = TipoCancha.FUTBOL_5;
+                                            break;
+                                        } else if (nuevoTipo == 2) {
+                                            tipoActualizado = TipoCancha.FUTBOL_7;
+                                            break;
+                                        } else if (nuevoTipo == 3) {
+                                            tipoActualizado = TipoCancha.BALONCESTO;
+                                            break;
+                                        } else System.out.println("No seleccionaste un tipo válido");
+                                    }
 
-                                Cancha actualizado = mapCanchas.actualizarCancha(actualizaId, nombreActualizado, tipoActualizado, estadoActualizado);
-                                System.out.printf("""
-                                                La cancha con id %d ha sido actualizada:
-                                                Nombre: %s
-                                                Tipo: %s
-                                                Estado: %s
-                                                ________________
-                                                """,
-                                        actualizado.getId(), actualizado.getNombre(), actualizado.getTipo(), actualizado.getEstado());
+                                    EstadoCancha estadoActualizado = null;
+                                    while (true) {
+                                        System.out.println("""
+                                                Selecciona el estado de la cancha:
+                                                1. Activa.
+                                                2. Mantenimineto.
+                                                3. Mantener el valor actual.""");
+                                        int nuevoEstado = sc.nextInt();
+                                        if (nuevoEstado == 3) break;
+                                        else if (nuevoEstado == 1) {
+                                            estadoActualizado = EstadoCancha.ACTIVA;
+                                            break;
+                                        } else if (nuevoEstado == 2) {
+                                            estadoActualizado = EstadoCancha.MANTENIMIENTO;
+                                            break;
+                                        } else System.out.println("No seleccionaste un estado válida");
+                                    }
+
+                                    Cancha actualizado = repoCanchas.actualizarCancha(actualizaId, nombreActualizado, tipoActualizado, estadoActualizado);
+                                    System.out.printf("""
+                                                    La cancha con id %d ha sido actualizada:
+                                                    Nombre: %s
+                                                    Tipo: %s
+                                                    Estado: %s
+                                                    ________________
+                                                    """,
+                                            actualizado.getId(), actualizado.getNombre(), actualizado.getTipo(), actualizado.getEstado());
+                                } catch (RuntimeException e) {
+                                    System.out.println(e.getMessage());
+                                }
                                 break;
                             case 5:
                                 System.out.println("Ingresa el id de la cancha a eliminar");
                                 int eliminarId = sc.nextInt();
-                                Cancha eliminar = mapCanchas.eliminarCanchaPorId(eliminarId);
-                                if (eliminar == null) {
-                                    System.out.printf("La cancha con id '%d' no existe.%n", eliminarId);
-                                    break;
-                                } else System.out.printf("""
-                                                La cancha con id: %d
-                                                Nombre: %s
-                                                Tipo: %s
-                                                Estado: %s
-                                                Ha sido eliminada.
-                                                ________________
-                                                """,
-                                        eliminar.getId(), eliminar.getNombre(), eliminar.getTipo(), eliminar.getEstado());
+                                try {
+                                    Cancha eliminar = repoCanchas.eliminarCanchaPorId(eliminarId);
+                                    System.out.printf("""
+                                                    La cancha con id: %d
+                                                    Nombre: %s
+                                                    Tipo: %s
+                                                    Estado: %s
+                                                    Ha sido eliminada.
+                                                    ________________
+                                                    """,
+                                            eliminar.getId(), eliminar.getNombre(), eliminar.getTipo(), eliminar.getEstado());
+                                } catch (RuntimeException e) {
+                                    System.out.println(e.getMessage());
+                                }
                                 break;
                             case 6:
-                                System.out.println("Gracias por usar, hasta pronto.");
+                                System.out.println("---------------------------");
                                 break menuCanchas;
                         }
                     }
@@ -227,7 +238,7 @@ public class Main {
                         switch (b) {
                             case 1:
                                 System.out.println("Ingrese los datos de la reserva");
-                                List<Cancha> listaCanchas = mapCanchas.listarCanchas();
+                                List<Cancha> listaCanchas = repoCanchas.listarCanchas();
                                 if (listaCanchas.isEmpty()) {
                                     System.out.println("No existen canchas en el momento\n________________");
                                     break;
