@@ -2,7 +2,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Reserva {
-    private static int contadorId = 0;
     private final int id;
     private int canchaId;
     private LocalDate fecha;
@@ -11,9 +10,8 @@ public class Reserva {
     private String emailEstudiante;
     private EstadoReserva estado;
 
-    public Reserva(int canchaId, LocalDate fecha, LocalTime horaInicio, String nombreEstudiante, String emailEstudiante){
-        contadorId++;
-        this.id = contadorId;
+    public Reserva(int id, int canchaId, LocalDate fecha, LocalTime horaInicio, String nombreEstudiante, String emailEstudiante){
+        this.id = id;
         this.canchaId = canchaId;
         this.fecha = fecha;
         this.horaInicio = horaInicio;

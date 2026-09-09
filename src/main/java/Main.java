@@ -13,7 +13,7 @@ public class Main {
         schema.crearTablas();
 
         CanchaRepository repoCanchas = new CanchaRepository(conexionSQLite);
-        ReservaRepository mapReservas = new ReservaRepository(repoCanchas);
+        ReservaRepository mapReservas = new ReservaRepository(repoCanchas, conexionSQLite);
         Scanner sc = new Scanner(System.in);
         System.out.println("\nBienvenido al programa de gestión de resevas");
 
