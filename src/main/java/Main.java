@@ -13,7 +13,7 @@ public class Main {
         schema.crearTablas();
 
         CanchaRepository repoCanchas = new CanchaRepository(conexionSQLite);
-        ReservaRepository mapReservas = new ReservaRepository(repoCanchas, conexionSQLite);
+        ReservaRepository repoReservas = new ReservaRepository(repoCanchas, conexionSQLite);
         Scanner sc = new Scanner(System.in);
         System.out.println("\nBienvenido al programa de gestión de resevas");
 
@@ -276,13 +276,13 @@ public class Main {
                                 System.out.println("Ingrese el email del estudiante");
                                 String emailEstudiante = sc.nextLine();
                                 try {
-                                    mapReservas.crearReserva(idCancha, fecha, hora, nombreEstudiante, emailEstudiante);
+                                    repoReservas.crearReserva(idCancha, fecha, hora, nombreEstudiante, emailEstudiante);
                                 } catch (RecursoNoEncontradoException | ReglaNegocioException e) {
                                     System.out.println("Error: " + e.getMessage());
                                 }
                                 break;
                             case 2:
-                                List<Reserva> listaReservas = mapReservas.listarReservas();
+                                List<Reserva> listaReservas = repoReservas.listarReservas();
                                 if (listaReservas.isEmpty()) {
                                     System.out.println("No existen reservas en el momento\n________________");
                                     break;
@@ -308,7 +308,7 @@ public class Main {
                                 int idReserva = sc.nextInt();
                                 sc.nextLine();
                                 try {
-                                    Reserva r = mapReservas.obtenerReservaPorId(idReserva);
+                                    Reserva r = repoReservas.obtenerReservaPorId(idReserva);
                                     System.out.printf("""
                                                     La Reserva con id %d es:
                                                     Nombre del Estudiante: %s
@@ -330,7 +330,7 @@ public class Main {
                                 int idReservaCancelar = sc.nextInt();
                                 sc.nextLine();
                                 try {
-                                    mapReservas.cancelarReserva(idReservaCancelar);
+                                    repoReservas.cancelarReserva(idReservaCancelar);
                                 } catch (RecursoNoEncontradoException | ReglaNegocioException e) {
                                     System.out.println("Error: " + e.getMessage());
                                 }
@@ -350,7 +350,7 @@ public class Main {
                                 System.out.println("Ingrese el nuevo nombre del estudiante");
                                 String nombreEstudianteActualizar = sc.nextLine();
                                 try {
-                                    mapReservas.actualizarReserva(idReservaActualizar, idCanchaActualizar, fechaActualizar,
+                                    repoReservas.actualizarReserva(idReservaActualizar, idCanchaActualizar, fechaActualizar,
                                             horaActualizar, nombreEstudianteActualizar);
                                 } catch (RecursoNoEncontradoException | ReglaNegocioException e) {
                                     System.out.println("Error: " + e.getMessage());

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ReservaRepository {
-    private final Map<Integer, Reserva> mapReservas = new HashMap<>();
     private final CanchaRepository canchaRepository;
     ConexionSQLite conexion;
 
