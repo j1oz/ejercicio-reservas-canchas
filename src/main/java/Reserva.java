@@ -20,6 +20,16 @@ public class Reserva {
         this.estado = EstadoReserva.CONFIRMADA;
     }
 
+    public Reserva(int id, int canchaId, LocalDate fecha, LocalTime horaInicio, String nombreEstudiante, String emailEstudiante, EstadoReserva estado){
+        this.id = id;
+        this.canchaId = canchaId;
+        this.fecha = fecha;
+        this.horaInicio = horaInicio;
+        this.nombreEstudiante = nombreEstudiante;
+        this.emailEstudiante = emailEstudiante;
+        this.estado = estado;
+    }
+
     public int getId(){
         return id;
     }

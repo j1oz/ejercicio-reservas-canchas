@@ -349,11 +349,9 @@ public class Main {
                                 String horaActualizar = sc.nextLine();
                                 System.out.println("Ingrese el nuevo nombre del estudiante");
                                 String nombreEstudianteActualizar = sc.nextLine();
-                                System.out.println("Ingrese el nuevo email del estudiante");
-                                String emailEstudianteActualizar = sc.nextLine();
                                 try {
                                     mapReservas.actualizarReserva(idReservaActualizar, idCanchaActualizar, fechaActualizar,
-                                            horaActualizar, nombreEstudianteActualizar, emailEstudianteActualizar);
+                                            horaActualizar, nombreEstudianteActualizar);
                                 } catch (RecursoNoEncontradoException | ReglaNegocioException e) {
                                     System.out.println("Error: " + e.getMessage());
                                 }
