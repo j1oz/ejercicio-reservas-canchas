@@ -1,3 +1,12 @@
+package com.jloz.reservascanchas.repository;
+
+import com.jloz.reservascanchas.database.ConexionSQLite;
+import com.jloz.reservascanchas.exception.RecursoNoEncontradoException;
+import com.jloz.reservascanchas.model.Cancha;
+import com.jloz.reservascanchas.model.EstadoCancha;
+import com.jloz.reservascanchas.model.TipoCancha;
+import org.springframework.stereotype.Repository;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -5,6 +14,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class CanchaRepository {
     private final ConexionSQLite conexion;
 

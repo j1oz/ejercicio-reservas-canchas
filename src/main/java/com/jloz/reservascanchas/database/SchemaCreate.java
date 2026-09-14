@@ -1,6 +1,11 @@
+package com.jloz.reservascanchas.database;
+
+import org.springframework.stereotype.Component;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@Component
 public class SchemaCreate {
     private final ConexionSQLite conexion;
 

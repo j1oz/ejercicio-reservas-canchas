@@ -1,3 +1,5 @@
+package com.jloz.reservascanchas.model;
+
 public class Cancha {
     private final int id;
     private String nombre;
