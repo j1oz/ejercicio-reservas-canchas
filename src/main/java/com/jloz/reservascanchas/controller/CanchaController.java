@@ -16,13 +16,18 @@ public class CanchaController {
         this.canchaRepository = canchaRepository;
     }
 
+    @PostMapping
+    public Cancha crear(@RequestBody CanchaRequestDTO dto){
+        return canchaRepository.crearCancha(dto.getNombre(), dto.getTipo(), dto.getEstado());
+    }
+
     @GetMapping           // GET /canchas (hereda el prefijo de arriba)
     public List<Cancha> listar() {
         return canchaRepository.listarCanchas();
     }
 
-    @PostMapping
-    public Cancha crear(@RequestBody CanchaRequestDTO dto){
-        return canchaRepository.crearCancha(dto.getNombre(), dto.getTipo(), dto.getEstado());
+    @GetMapping("/{id}")
+    public Cancha obtener(@PathVariable int id) {
+        return canchaRepository.obtenerCanchaPorId(id);
     }
 }
