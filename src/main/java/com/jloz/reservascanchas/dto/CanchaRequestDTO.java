@@ -19,23 +19,11 @@ public class CanchaRequestDTO {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
     public TipoCancha getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoCancha tipo) {
-        this.tipo = tipo;
-    }
-
     public EstadoCancha getEstado() {
         return estado;
-    }
-
-    public void setEstado(EstadoCancha estado) {
-        this.estado = estado;
     }
 }
