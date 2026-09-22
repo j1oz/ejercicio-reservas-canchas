@@ -4,6 +4,7 @@ import com.jloz.reservascanchas.dto.ReservaRequestDTO;
 import com.jloz.reservascanchas.model.Reserva;
 import com.jloz.reservascanchas.repository.ReservaRepository;
 import jakarta.validation.Valid;
+import org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequestMapping("/reservas")
 public class ReservaController {
     private final ReservaRepository reservaRepository;
+    private PatternValidator patternValidator;
 
     public ReservaController(ReservaRepository reservaRepository){
         this.reservaRepository = reservaRepository;
@@ -34,5 +36,11 @@ public class ReservaController {
     @GetMapping
     public List<Reserva> listar(){
         return reservaRepository.listarReservas();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelar(@PathVariable int id){
+        reservaRepository.cancelarReserva(id);
+        return ResponseEntity.noContent().build();
     }
 }
