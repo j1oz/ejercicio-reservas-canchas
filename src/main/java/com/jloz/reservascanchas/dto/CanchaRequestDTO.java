@@ -2,11 +2,15 @@ package com.jloz.reservascanchas.dto;
 
 import com.jloz.reservascanchas.model.EstadoCancha;
 import com.jloz.reservascanchas.model.TipoCancha;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class CanchaRequestDTO {
-
+    @NotBlank
     private String nombre;
+    @NotNull
     private TipoCancha tipo;
+    @NotNull
     private EstadoCancha estado;
 
     public CanchaRequestDTO (String nombre, TipoCancha tipo, EstadoCancha estado) {

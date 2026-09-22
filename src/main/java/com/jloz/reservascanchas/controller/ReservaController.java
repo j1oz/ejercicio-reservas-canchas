@@ -4,6 +4,8 @@ import com.jloz.reservascanchas.dto.ReservaRequestDTO;
 import com.jloz.reservascanchas.model.Reserva;
 import com.jloz.reservascanchas.repository.ReservaRepository;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,14 +20,15 @@ public class ReservaController {
     }
 
     @PostMapping
-    public Reserva crear(@Valid @RequestBody ReservaRequestDTO dto){
-        return reservaRepository.crearReserva(
+    public ResponseEntity<Reserva> crear(@Valid @RequestBody ReservaRequestDTO dto){
+        Reserva reserva = reservaRepository.crearReserva(
                 dto.getCanchaId(),
                 dto.getFecha(),
                 dto.getHoraInicio(),
                 dto.getNombreEstudiante(),
                 dto.getEmailEstudiante()
         );
+        return ResponseEntity.status(HttpStatus.CREATED).body(reserva);
     }
 
     @GetMapping
