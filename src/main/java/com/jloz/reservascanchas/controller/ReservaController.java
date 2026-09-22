@@ -3,6 +3,7 @@ package com.jloz.reservascanchas.controller;
 import com.jloz.reservascanchas.dto.ReservaRequestDTO;
 import com.jloz.reservascanchas.model.Reserva;
 import com.jloz.reservascanchas.repository.ReservaRepository;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class ReservaController {
     }
 
     @PostMapping
-    public Reserva crear(@RequestBody ReservaRequestDTO dto){
+    public Reserva crear(@Valid @RequestBody ReservaRequestDTO dto){
         return reservaRepository.crearReserva(
                 dto.getCanchaId(),
                 dto.getFecha(),
