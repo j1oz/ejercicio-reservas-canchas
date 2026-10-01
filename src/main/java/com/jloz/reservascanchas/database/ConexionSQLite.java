@@ -11,11 +11,14 @@ import java.sql.SQLException;
 public class ConexionSQLite {
     private Connection conexion;
 
-    public ConexionSQLite(@Value("${ruta.bd}") String url) {
+    public ConexionSQLite(@Value("${bd.url}") String url,
+                          @Value("${bd.usuario}") String usuario,
+                          @Value("${bd.clave}") String clave) {
         try {
-            conexion = DriverManager.getConnection("jdbc:sqlite:" + url);
+            conexion = DriverManager.getConnection(
+                    "jdbc:postgresql:" + url, usuario, clave);
         } catch (SQLException e) {
-            throw new RuntimeException("Error iniciando la conexion con la bd",e);
+            throw new RuntimeException("Error iniciando la conexion con la bd", e);
         }
     }
 
@@ -27,7 +30,7 @@ public class ConexionSQLite {
         try {
             conexion.close();
         } catch (SQLException e) {
-            throw new RuntimeException("Error cerrando la conexion con la bd",e);
+            throw new RuntimeException("Error cerrando la conexion con la bd", e);
         }
     }
 }

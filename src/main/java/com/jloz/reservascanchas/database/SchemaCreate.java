@@ -16,14 +16,14 @@ public class SchemaCreate {
     public void crearTablas() {
         String cancha = """
                 CREATE TABLE IF NOT EXISTS cancha (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 nombre VARCHAR(20),
                 tipo TEXT,
                 estado TEXT)
                 """;
         String reserva = """
                 CREATE TABLE IF NOT EXISTS reserva (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 cancha_id INTEGER,
                 fecha DATE,
                 hora TIME,

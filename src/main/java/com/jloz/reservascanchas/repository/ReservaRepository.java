@@ -65,17 +65,17 @@ public class ReservaRepository {
     } // R4
 
     private void validarSolapamiento(int canchaId, LocalDateTime fechaHora, int idReservaExcluir) {
-        String fechaSql = fechaHora.toLocalDate().toString();
+        LocalDate fecha = fechaHora.toLocalDate();
         String sql = "SELECT fecha, hora FROM reserva WHERE cancha_id = ? AND fecha = ? AND estado = ? AND id != ?";
         try (PreparedStatement stmt = conexion.getConexion().prepareStatement(sql)) {
             stmt.setInt(1, canchaId);
-            stmt.setString(2, fechaSql);
+            stmt.setObject(2, fecha);
             stmt.setString(3, EstadoReserva.CONFIRMADA.name());
             stmt.setInt(4, idReservaExcluir);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    LocalTime horaRs = LocalTime.parse(rs.getString("hora"), DateTimeFormatter.ofPattern("HH:mm"));
-                    var fechaHoraReservada = LocalDateTime.of(LocalDate.parse(fechaSql), horaRs);
+                    LocalTime horaRs = rs.getObject("hora", LocalTime.class);
+                    var fechaHoraReservada = LocalDateTime.of(fecha, horaRs);
                     if (fechaHora.isBefore(fechaHoraReservada.plusHours(1)) &&
                             fechaHora.plusHours(1).isAfter(fechaHoraReservada)) {
                         throw new ReglaNegocioException("La hora que usted solicita ya ha sido reservada.");
@@ -92,8 +92,6 @@ public class ReservaRepository {
         Cancha cancha = canchaRepository.obtenerCanchaPorId(canchaId);
         LocalDateTime fechaHora = LocalDateTime.of(fecha, horaInicio);
         LocalDateTime horaActual = LocalDateTime.now();
-        String fechaString = fecha.toString();
-        String horaString = horaInicio.format(DateTimeFormatter.ofPattern("HH:mm"));
 
         //r6
         validarExistenciaYEstadoCancha(cancha);
@@ -107,8 +105,8 @@ public class ReservaRepository {
         String sql = "INSERT INTO reserva (cancha_id, fecha, hora, nombreestudiante, emailestudiante, estado) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = conexion.getConexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, canchaId);
-            statement.setString(2, fechaString);
-            statement.setString(3, horaString);
+            statement.setObject(2, fecha);
+                statement.setObject(3, horaInicio);
             statement.setString(4, nombreEstudiante);
             statement.setString(5, emailEstudiante);
             statement.setString(6, EstadoReserva.CONFIRMADA.toString());
@@ -133,10 +131,8 @@ public class ReservaRepository {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 int idCancha = rs.getInt("cancha_id");
-                String fechaStr = rs.getString("fecha");
-                LocalDate fecha = LocalDate.parse(fechaStr);
-                String horaStr = rs.getString("hora");
-                LocalTime hora = LocalTime.parse(horaStr);
+                LocalDate fecha = rs.getObject("fecha", LocalDate.class);
+                LocalTime hora = rs.getObject("hora", LocalTime.class);
                 String nombre = rs.getString("nombreestudiante");
                 String email = rs.getString("emailestudiante");
                 String estadostr = rs.getString("estado");
