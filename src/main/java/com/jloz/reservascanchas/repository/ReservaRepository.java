@@ -155,10 +155,8 @@ public class ReservaRepository {
                 if (rs.next()) {
                     int idReserva = rs.getInt("id");
                     int idCancha = rs.getInt("cancha_id");
-                    String fechaStr = rs.getString("fecha");
-                    LocalDate fecha = LocalDate.parse(fechaStr);
-                    String horaStr = rs.getString("hora");
-                    LocalTime hora = LocalTime.parse(horaStr);
+                    LocalDate fecha = rs.getObject("fecha", LocalDate.class);
+                    LocalTime hora = rs.getObject("hora", LocalTime.class);
                     String nombre = rs.getString("nombreestudiante");
                     String email = rs.getString("emailestudiante");
                     String estadostr = rs.getString("estado");
@@ -193,7 +191,7 @@ public class ReservaRepository {
         return reserva;
     }
 
-    public Reserva actualizarReserva(int id, String canchaIdStr, String fechaStr, String horaInicioStr,
+    public Reserva actualizarReserva(int id, Integer canchaId, LocalDate fecha, LocalTime horaInicio,
                                      String nombreEstudiante) {
         Reserva reserva = obtenerReservaPorId(id);
         if (reserva.getEstado() == EstadoReserva.CANCELADA ||
@@ -201,44 +199,41 @@ public class ReservaRepository {
             throw new ReglaNegocioException("La reserva ya ha sido cancelada o completada");
         }
 
-        if (canchaIdStr.isBlank()) {
-            canchaIdStr = String.valueOf(reserva.getCanchaId());
+        if (canchaId == null) {
+            canchaId = reserva.getCanchaId();
         }
-        if (fechaStr.isBlank()) {
-            fechaStr = reserva.getFecha().toString();
+        if (fecha == null) {
+            fecha = reserva.getFecha();
         }
-        if (horaInicioStr.isBlank()) {
-            horaInicioStr = reserva.getHoraInicio().format(DateTimeFormatter.ofPattern("HH:mm"));
+        if (horaInicio == null) {
+            horaInicio = reserva.getHoraInicio();
         }
-        if (nombreEstudiante.isBlank()) {
+        if (nombreEstudiante == null) {
             nombreEstudiante = reserva.getNombreEstudiante();
         }
 
-        int canchaIdInt = Integer.parseInt(canchaIdStr);
-        LocalDate fecha = LocalDate.parse(fechaStr);
-        LocalTime horaInicio = LocalTime.parse(horaInicioStr);
         LocalDateTime fechaHora = LocalDateTime.of(fecha, horaInicio);
         LocalDateTime horaActual = LocalDateTime.now();
 
         //r6
-        validarExistenciaYEstadoCancha(canchaRepository.obtenerCanchaPorId(canchaIdInt));
+        validarExistenciaYEstadoCancha(canchaRepository.obtenerCanchaPorId(canchaId));
         //r3 y r5
         validarAnticipacion(fechaHora, horaActual);
         //r4
         //r1
-        validarSolapamiento(canchaIdInt, fechaHora, id);
+        validarSolapamiento(canchaId, fechaHora, id);
 
         String sql = "UPDATE reserva SET cancha_id = ?, fecha = ?, hora = ?, nombreestudiante = ? WHERE id = ?";
         try (PreparedStatement stmt = conexion.getConexion().prepareStatement(sql)){
 
-            stmt.setInt(1, canchaIdInt);
-            stmt.setString(2, fechaStr);
-            stmt.setString(3, horaInicioStr);
+            stmt.setInt(1, canchaId);
+            stmt.setObject(2, fecha);
+            stmt.setObject(3, horaInicio);
             stmt.setString(4, nombreEstudiante);
             stmt.setInt(5, id);
             stmt.executeUpdate();
 
-            reserva.setCanchaId(canchaIdInt);
+            reserva.setCanchaId(canchaId);
             reserva.setFecha(fecha);
             reserva.setHoraInicio(horaInicio);
             reserva.setNombreEstudiante(nombreEstudiante);
