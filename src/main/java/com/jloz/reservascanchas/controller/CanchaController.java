@@ -22,13 +22,17 @@ public class CanchaController {
 
     @PostMapping
     public ResponseEntity<Cancha> crear(@Valid @RequestBody CanchaRequestDTO dto){
-        Cancha cancha = canchaRepository.crearCancha(dto.getNombre(), dto.getTipo(), dto.getEstado());
+        Cancha cancha = new Cancha();
+        cancha.setNombre(dto.getNombre());
+        cancha.setTipo(dto.getTipo());
+        cancha.setEstado(dto.getEstado());
+        canchaRepository.save(cancha);
         return ResponseEntity.status(HttpStatus.CREATED).body(cancha);
     }
 
     @GetMapping           // GET /canchas (hereda el prefijo de arriba)
     public List<Cancha> listar() {
-        return canchaRepository.listarCanchas();
+        return canchaRepository.findAll();
     }
 
     @GetMapping("/{id}")

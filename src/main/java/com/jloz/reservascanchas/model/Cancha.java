@@ -1,19 +1,30 @@
 package com.jloz.reservascanchas.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "cancha")
 public class Cancha {
-    private final int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String nombre;
+    @Enumerated(EnumType.STRING)
     private TipoCancha tipo;
+    @Enumerated(EnumType.STRING)
     private EstadoCancha estado;
 
-    public Cancha(int id, String nombre, TipoCancha tipo, EstadoCancha estado) {
+    public Cancha() {
+    }
+
+    public Cancha(Integer id, String nombre, TipoCancha tipo, EstadoCancha estado) {
         this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
         this.estado = estado;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
