@@ -9,10 +9,7 @@ import com.jloz.reservascanchas.model.EstadoReserva;
 import com.jloz.reservascanchas.model.Reserva;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -47,7 +44,8 @@ public class ReservaRepository {
 
     private void validarLimiteEstudiante(String email, int idReservaExcluir) {
         String sql = "SELECT COUNT(*) FROM reserva WHERE emailestudiante = ? AND estado = ? AND id != ?";
-        try (PreparedStatement statement = conexion.getConexion().prepareStatement(sql)) {
+        try (Connection con = conexion.getConexion();
+             PreparedStatement statement = con.prepareStatement(sql)) {
             statement.setString(1, email);
             statement.setString(2, EstadoReserva.CONFIRMADA.name());
             statement.setInt(3, idReservaExcluir);
@@ -67,7 +65,8 @@ public class ReservaRepository {
     private void validarSolapamiento(int canchaId, LocalDateTime fechaHora, int idReservaExcluir) {
         LocalDate fecha = fechaHora.toLocalDate();
         String sql = "SELECT fecha, hora FROM reserva WHERE cancha_id = ? AND fecha = ? AND estado = ? AND id != ?";
-        try (PreparedStatement stmt = conexion.getConexion().prepareStatement(sql)) {
+        try (Connection con = conexion.getConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, canchaId);
             stmt.setObject(2, fecha);
             stmt.setString(3, EstadoReserva.CONFIRMADA.name());
@@ -103,10 +102,11 @@ public class ReservaRepository {
         validarSolapamiento(canchaId, fechaHora, -1);
 
         String sql = "INSERT INTO reserva (cancha_id, fecha, hora, nombreestudiante, emailestudiante, estado) VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = conexion.getConexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = conexion.getConexion();
+             PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, canchaId);
             statement.setObject(2, fecha);
-                statement.setObject(3, horaInicio);
+            statement.setObject(3, horaInicio);
             statement.setString(4, nombreEstudiante);
             statement.setString(5, emailEstudiante);
             statement.setString(6, EstadoReserva.CONFIRMADA.toString());
@@ -126,7 +126,8 @@ public class ReservaRepository {
     public List<Reserva> listarReservas() {
         List<Reserva> lista = new ArrayList<>();
         String query = "SELECT * FROM reserva";
-        try (PreparedStatement stmt = conexion.getConexion().prepareStatement(query);
+        try (Connection con = conexion.getConexion();
+             PreparedStatement stmt = con.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 int id = rs.getInt("id");
@@ -149,7 +150,8 @@ public class ReservaRepository {
     public Reserva obtenerReservaPorId(int id) {
         String query = "SELECT * FROM reserva WHERE id = ?";
         Reserva reserva;
-        try (PreparedStatement stmt = conexion.getConexion().prepareStatement(query)) {
+        try (Connection con = conexion.getConexion();
+             PreparedStatement stmt = con.prepareStatement(query)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -179,7 +181,8 @@ public class ReservaRepository {
             throw new ReglaNegocioException("La reserva ya ha sido cancelada o completada");
         }
         String sql = "UPDATE reserva SET estado = ? WHERE id = ?";
-        try (PreparedStatement stmt = conexion.getConexion().prepareStatement(sql)) {
+        try (Connection con = conexion.getConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
             String cancelar = EstadoReserva.CANCELADA.name();
             stmt.setString(1, cancelar);
             stmt.setInt(2, id);
@@ -224,7 +227,8 @@ public class ReservaRepository {
         validarSolapamiento(canchaId, fechaHora, id);
 
         String sql = "UPDATE reserva SET cancha_id = ?, fecha = ?, hora = ?, nombreestudiante = ? WHERE id = ?";
-        try (PreparedStatement stmt = conexion.getConexion().prepareStatement(sql)){
+        try (Connection con = conexion.getConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)){
 
             stmt.setInt(1, canchaId);
             stmt.setObject(2, fecha);
